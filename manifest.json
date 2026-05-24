@@ -1,0 +1,17 @@
+{
+  "name": "Edge AI Executive Assistant",
+  "short_name": "EdgeAssistant",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#1e1e2e",
+  "theme-color": "#1e1e2e",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://cdn.jsdelivr.net/npm/@tabler/icons@2.47.0/icons/device-laptop.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ]
+}
