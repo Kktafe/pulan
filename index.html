@@ -3,608 +3,689 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Edge AI Executive Assistant</title>
+  <title>Enterprise Architect | Edge Core</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#1e1e2e">
+  <meta name="theme-color" content="#0d0d0d">
   
-  <!-- CSS Styling (Strictly scoped variables, no style duplication) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --bg-primary: #1e1e2e;
-      --bg-surface: #252538;
-      --accent: #cba6f7;
-      --text-main: #cdd6f4;
-      --text-muted: #a6adc8;
-      --border-color: #313244;
-      --danger: #f38ba8;
+      --bg-main: #0d0d0d;
+      --bg-card: #141414;
+      --text-clean: #f5f5f5;
+      --text-muted: #7e7e7e;
+      --border-thin: #262626;
+      --accent-dim: #9c84b3;
+      --success-indicator: #a6e3a1;
+      --font-serif: 'Playfair Display', serif;
+      --font-sans: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      -webkit-font-smoothing: antialiased;
     }
 
-    body {
-      background-color: var(--bg-primary);
-      color: var(--text-main);
-      height: 100vh;
+    body { 
+      background-color: var(--bg-main); 
+      color: var(--text-clean); 
+      font-family: var(--font-sans);
+      height: 100vh; 
+      display: flex; 
+      flex-direction: column; 
+      overflow: hidden; 
+    }
+
+    /* Strict Geometric Structural Grid Layout */
+    .grid-line-vertical {
+      position: fixed; top: 0; bottom: 0; width: 1px; background: var(--border-thin); z-index: 1; pointer-events: none;
+    }
+    .gl-1 { left: 25%; }
+    .gl-2 { left: 50%; }
+    .gl-3 { left: 75%; }
+
+    #app-header {
+      border-bottom: 1px solid var(--border-thin);
+      padding: 24px;
       display: flex;
-      flex-direction: column;
-      overflow: hidden;
+      justify-content: space-between;
+      align-items: baseline;
+      z-index: 10;
+      background: rgba(13, 13, 13, 0.8);
+      backdrop-filter: blur(12px);
     }
 
-    /* Active Workspace Stream Container */
-    #app-container {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      padding-bottom: 140px;
+    #app-header h1 {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: 24px;
+      letter-spacing: -0.5px;
+    }
+
+    #app-header h1 span {
+      font-style: italic;
+      color: var(--text-muted);
+    }
+
+    .meta-ticker {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+
+    #app-container { 
+      flex: 1; 
+      overflow-y: auto; 
+      position: relative;
+      z-index: 5;
+      padding: 40px 24px 180px 24px;
     }
 
     .hidden { display: none !important; }
 
-    /* Onboarding Overlay Component */
+    /* Elegant Stark Onboarding Overlay */
     #onboarding-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(30, 30, 46, 0.95);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg-main); z-index: 1000;
+      display: flex; align-items: center; justify-content: center; padding: 24px;
     }
 
-    .modal-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 24px;
-      max-width: 450px;
+    .agency-card {
+      max-width: 540px; 
       width: 100%;
+      border: 1px solid var(--border-thin);
+      padding: 48px;
+      background: var(--bg-card);
     }
 
-    .btn {
-      background: var(--accent);
-      color: var(--bg-primary);
+    .agency-card h2 {
+      font-family: var(--font-serif);
+      font-size: 36px;
+      font-weight: 400;
+      line-height: 1.1;
+      margin-bottom: 16px;
+      letter-spacing: -1px;
+    }
+
+    .agency-card p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: block;
+      letter-spacing: 1px;
+    }
+
+    .agency-select, .chat-input {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--border-thin);
+      color: var(--text-clean);
+      padding: 14px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    .agency-select:focus, .chat-input:focus {
+      border-color: var(--text-clean);
+    }
+
+    .btn-action {
+      background: var(--text-clean);
+      color: var(--bg-main);
       border: none;
-      padding: 12px 20px;
-      border-radius: 8px;
+      padding: 16px 24px;
+      font-family: var(--font-mono);
+      font-size: 12px;
       font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
       cursor: pointer;
       width: 100%;
-      margin-top: 12px;
+      transition: all 0.3s ease;
     }
 
-    .btn-secondary {
+    .btn-action:disabled {
+      background: var(--border-thin);
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+
+    .btn-action:hover:not(:disabled) {
       background: transparent;
-      color: var(--text-main);
-      border: 1px solid var(--border-color);
+      color: var(--text-clean);
+      box-shadow: inset 0 0 0 1px var(--text-clean);
     }
 
-    /* Fixed Functional Bottom Panel */
-    .bottom-panel {
-      position: fixed;
-      bottom: 0; left: 0; width: 100%;
-      background: var(--bg-surface);
-      border-top: 1px solid var(--border-color);
-      padding: 12px 16px;
+    /* Clean Stream Architecture */
+    #chat-stream {
+      max-width: 900px;
+      margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      z-index: 500;
+      gap: 32px;
     }
 
-    .input-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
+    .msg-row {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      border-top: 1px solid var(--border-thin);
+      padding-top: 24px;
     }
 
-    .chat-input {
-      flex: 1;
-      background: var(--bg-primary);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 12px;
-      border-radius: 8px;
-      outline: none;
+    .msg-speaker {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 1px;
     }
 
-    .icon-btn {
-      background: transparent;
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      width: 44px;
-      height: 44px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
+    .msg-content {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text-clean);
+      white-space: pre-wrap;
+      user-select: text;
     }
 
-    .icon-btn.active {
-      background: var(--accent);
-      color: var(--bg-primary);
-    }
-
-    .tab-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .tabs-center {
-      display: flex;
-      gap: 8px;
+    /* Minimalist Document Workspace */
+    #templatize-workspace {
+      max-width: 900px;
       margin: 0 auto;
     }
 
-    .tab-trigger {
-      background: transparent;
-      border: 1px solid transparent;
-      color: var(--text-muted);
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-weight: 600;
+    .file-dropzone {
+      border: 1px dashed var(--border-thin);
+      padding: 64px 24px;
+      text-align: center;
+      background: var(--bg-card);
+      transition: background 0.3s ease, border-color 0.3s ease;
       cursor: pointer;
+    }
+
+    .file-dropzone:hover {
+      background: transparent;
+      border-color: var(--text-clean);
+    }
+
+    .file-dropzone h3 {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    /* Floating Minimal Bottom Panel */
+    .bottom-dock {
+      position: fixed; bottom: 0; left: 0; width: 100%;
+      background: var(--bg-main); border-top: 1px solid var(--border-thin);
+      padding: 24px; z-index: 500;
+    }
+
+    .dock-container {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 200px 1fr 150px; gap: 24px; align-items: center;
+    }
+
+    .dock-tabs {
+      display: flex; gap: 16px;
+    }
+
+    .tab-trigger {
+      background: transparent; border: none;
+      color: var(--text-muted); font-family: var(--font-mono);
+      font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+      cursor: pointer; padding: 8px 0; position: relative;
     }
 
     .tab-trigger.active {
-      background: rgba(203, 166, 247, 0.15);
-      color: var(--accent);
-      border-color: var(--accent);
+      color: var(--text-clean);
     }
 
-    /* Message Bubbles */
-    .msg-wrap {
-      margin-bottom: 16px;
-      display: flex;
-      flex-direction: column;
+    .tab-trigger.active::after {
+      content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px; background: var(--text-clean);
     }
-    .msg-wrap.user { align-items: flex-end; }
-    .msg-wrap.agent { align-items: flex-start; }
 
-    .bubble {
-      max-width: 85%;
-      padding: 12px 16px;
-      border-radius: 12px;
-      line-height: 1.5;
+    .input-wrapper {
+      position: relative; display: flex; align-items: center;
+      border-bottom: 1px solid var(--border-thin);
     }
-    .user .bubble { background: var(--accent); color: var(--bg-primary); }
-    .agent .bubble { background: var(--bg-surface); border: 1px solid var(--border-color); }
 
-    /* Floating Utility Drawer */
+    .input-wrapper:focus-within {
+      border-color: var(--text-clean);
+    }
+
+    .dock-input {
+      width: 100%; background: transparent; border: none; color: var(--text-clean);
+      padding: 12px 40px 12px 0; font-family: var(--font-sans); font-size: 14px; outline: none;
+    }
+
+    .mic-icon-btn {
+      background: transparent; border: none; color: var(--text-muted); cursor: pointer;
+      position: absolute; right: 40px; font-size: 16px; transition: color 0.3s ease;
+    }
+    .mic-icon-btn.active { color: #f38ba8; }
+
+    .submit-arrow-btn {
+      background: transparent; border: none; color: var(--text-clean); cursor: pointer;
+      position: absolute; right: 0; font-size: 16px;
+    }
+
+    /* Repository Drawer Panel */
     #utility-drawer {
-      position: fixed;
-      bottom: 80px; right: 16px;
-      width: 320px; max-height: 400px;
-      background: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-      display: flex;
-      flex-direction: column;
-      z-index: 600;
+      position: fixed; top: 0; right: 0; width: 400px; height: 100%;
+      background: var(--bg-card); border-left: 1px solid var(--border-thin);
+      z-index: 600; display: flex; flex-direction: column;
+      transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .drawer-header {
-      padding: 12px;
-      border-bottom: 1px solid var(--border-color);
-      font-weight: bold;
+    #utility-drawer.open {
+      transform: translateX(0);
     }
 
-    .drawer-list {
-      flex: 1;
-      overflow-y: auto;
-      list-style: none;
+    .drawer-header-pane {
+      padding: 24px; border-bottom: 1px solid var(--border-thin);
+      display: flex; justify-content: space-between; align-items: baseline;
     }
 
+    .drawer-header-pane h4 { font-family: var(--font-serif); font-size: 20px; font-weight: 400; }
+
+    .drawer-list { flex: 1; overflow-y: auto; list-style: none; padding: 24px; }
     .drawer-item {
-      padding: 10px 12px;
-      border-bottom: 1px solid var(--border-color);
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      padding: 16px 0; border-bottom: 1px solid var(--border-thin);
+      display: flex; justify-content: space-between; align-items: center; font-size: 13px;
     }
 
-    .drawer-item:hover { background: rgba(255,255,255,0.05); }
+    .item-title { font-family: var(--font-sans); color: var(--text-clean); }
+    .item-meta { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
 
-    /* Dropzone Styling */
-    .file-dropzone {
-      border: 2px dashed var(--border-color);
-      border-radius: 12px;
-      padding: 40px 20px;
-      text-align: center;
-      color: var(--text-muted);
-      cursor: pointer;
+    .progress-track {
+      background: #1a1a1a; height: 2px; width: 100%; margin-top: 16px; overflow: hidden; display: none;
     }
-
-    .progress-container {
-      margin-top: 12px;
-      background: var(--bg-primary);
-      border-radius: 4px;
-      height: 8px;
-      overflow: hidden;
-    }
-    .progress-bar {
-      background: var(--accent);
-      height: 100%;
-      width: 0%;
-      transition: width 0.2s ease;
-    }
+    .progress-fill { background: var(--text-clean); height: 100%; width: 0%; transition: width 0.1s linear; }
   </style>
-
-  <!-- External Script Dependencies (Mock Injection Fallbacks Loaded Locally) -->
   <script src="https://cdn.jsdelivr.net/npm/dexie@3.2.4/dist/dexie.min.js"></script>
 </head>
 <body>
 
-  <!-- App Workspace Stream -->
-  <main id="app-container">
-    <!-- Rephrase Workspace View -->
-    <div id="rephrase-workspace">
-      <div class="msg-wrap agent">
-        <div class="bubble">System Initialization Complete. Enter text or use voice input to compute local variations.</div>
+  <div class="grid-line-vertical gl-1"></div>
+  <div class="grid-line-vertical gl-2"></div>
+  <div class="grid-line-vertical gl-3"></div>
+
+  <header id="app-header">
+    <h1>Architecture <span>Intelligence</span></h1>
+    <div class="meta-ticker" id="hardware-hw-status">WebGPU Layer Offline</div>
+  </header>
+
+  <div id="onboarding-overlay">
+    <div class="agency-card">
+      <h2>Initialize Engine.</h2>
+      <p>Compiles local execution kernels directly onto browser WebGPU textures for zero-cloud sovereignty.</p>
+      
+      <div class="form-group">
+        <label class="form-label">System State</label>
+        <div id="gpu-check-status" style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);">Verifying local system profile...</div>
       </div>
-      <div id="chat-stream"></div>
+
+      <div class="form-group">
+        <label class="form-label">Vernacular Target</label>
+        <select id="lang-selection" class="agency-select">
+          <option value="en-IN">English (India)</option>
+          <option value="ta-IN">Tamil (தமிழ்)</option>
+          <option value="hi-IN">Hindi (हिन्दी)</option>
+          <option value="te-IN">Telugu (తెలుగు)</option>
+          <option value="kn-IN">Kannada (ಕನ್ನಡ)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Model Context Block</label>
+        <select id="model-selection" class="agency-select">
+          <option value="Llama-3.2-1B-Instruct-q4f16_1-MLC">Llama 3.2 1B (Ultra-Lean Optimization)</option>
+          <option value="Gemma-2B-it-q4f16_1-MLC">Gemma 2B IT (Balanced Enterprise Profile)</option>
+        </select>
+      </div>
+
+      <button class="btn-action" id="btn-init-hardware" disabled>Mount Edge Fabric</button>
+      <div class="progress-track" id="hardware-progress-container">
+        <div class="progress-fill" id="hardware-bar"></div>
+      </div>
+      <div id="status-text" style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); margin-top: 12px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px;"></div>
+    </div>
+  </div>
+
+  <main id="app-container">
+    <div id="rephrase-workspace">
+      <div id="chat-stream">
+        <div class="msg-row">
+          <div class="msg-speaker">System</div>
+          <div class="msg-content">Core engines hydrated. Feed input strings or voice frames to generate assertive, structured executive directives.</div>
+        </div>
+      </div>
     </div>
 
-    <!-- Templatize Workspace View -->
     <div id="templatize-workspace" class="hidden">
       <div class="file-dropzone" id="dropzone">
-        <p>Drag & Drop Documents Here or Click to Upload</p>
-        <span style="font-size: 12px; color: var(--text-muted);">Parses natively via browser runtime engine</span>
-        <input type="file" id="file-input" class="hidden" accept=".txt,.json,.pdf">
+        <h3>Drop Architecture Template</h3>
+        <p style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 8px;">Supports plain text structure arrays (.txt, .md, .json)</p>
+        <input type="file" id="file-input" class="hidden" accept=".txt,.json,.md,.csv">
       </div>
-      <div id="template-status-feed" style="margin-top: 16px;"></div>
+      <div id="template-status-feed" style="margin-top: 24px; font-family: var(--font-mono); font-size: 12px;"></div>
     </div>
   </main>
 
-  <!-- Interactive Onboarding Overlay (Hydration Interceptor) -->
-  <div id="onboarding-overlay">
-    <div class="modal-card">
-      <h3 style="margin-bottom: 8px;">Hydrate Local Engine</h3>
-      <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 16px;">
-        This application executes 100% on-device. The first-pass deployment requires allocating localized model weights into your secure browser storage container.
-      </p>
-      
-      <label style="font-size: 12px; font-weight: bold; display:block; margin-bottom: 4px;">PRIMARY LANGUAGE</label>
-      <select id="lang-selection" class="chat-input" style="width:100%; margin-bottom:12px; background:var(--bg-surface);">
-        <option value="ta">Tamil (தமிழ்)</option>
-        <option value="hi">Hindi (हिन्दी)</option>
-        <option value="te">Telugu (తెలుగు)</option>
-        <option value="kn">Kannada (ಕನ್ನಡ)</option>
-        <option value="en" selected>English</option>
-      </select>
-
-      <button class="btn" id="btn-hydrate-full">Download Local AI Pipeline (~2.5GB)</button>
-      <div class="progress-container hidden" id="hydration-progress-ui">
-        <div class="progress-bar" id="hydration-bar"></div>
-      </div>
-      <div id="hydration-status-text" style="font-size: 12px; text-align: center; margin-top: 4px; color: var(--text-muted);"></div>
+  <div id="utility-drawer">
+    <div class="drawer-header-pane">
+      <h4>Local Memory Index</h4>
+      <button id="btn-drawer-close" style="background:transparent; border:none; color:var(--text-clean); font-family:var(--font-mono); font-size:11px; cursor:pointer; text-transform:uppercase;">[ Close ]</button>
     </div>
+    <div style="padding: 24px; border-bottom: 1px solid var(--border-thin);">
+      <input type="text" id="search-memory" class="chat-input" placeholder="Query historical logs...">
+    </div>
+    <ul class="drawer-list" id="drawer-target-list"></ul>
   </div>
 
-  <!-- Persistent Floating Utility Drawer -->
-  <div id="utility-drawer" class="hidden">
-    <div class="drawer-header">Memory Repository</div>
-    <div style="padding: 8px;">
-      <input type="text" id="search-memory" class="chat-input" style="width:100%; padding: 6px;" placeholder="Search matching history strings...">
-    </div>
-    <ul class="drawer-list" id="memory-items-target"></ul>
-  </div>
-
-  <!-- Anchored Navigation Input Control Tray -->
-  <footer class="bottom-panel">
-    <div class="input-row" id="interaction-tray">
-      <button class="icon-btn" id="btn-voice-toggle" title="Toggle Local Audio">🎙️</button>
-      <input type="text" id="text-input-field" class="chat-input" placeholder="Compute localized processing input...">
-      <button class="icon-btn active" id="btn-submit-input">➔</button>
-    </div>
-
-    <div class="tab-row">
-      <div style="width: 44px;"></div> <!-- Structural Spacing Balance -->
-      <div class="tabs-center">
+  <footer class="bottom-dock">
+    <div class="dock-container">
+      <div class="dock-tabs">
         <button class="tab-trigger active" id="tab-rephrase" data-target="rephrase-workspace">Rephrase</button>
         <button class="tab-trigger" id="tab-templatize" data-target="templatize-workspace">Templatize</button>
       </div>
-      <button class="icon-btn" id="btn-menu-toggle" title="Open Drawer Menu">☰</button>
+
+      <div class="input-wrapper">
+        <input type="text" id="user-text-input" class="dock-input" placeholder="Awaiting hardware instantiation..." disabled>
+        <button class="mic-icon-btn" id="btn-voice">🎙️</button>
+        <button class="submit-arrow-btn" id="btn-send" disabled>➔</button>
+      </div>
+
+      <div style="text-align: right;">
+        <button id="btn-drawer-toggle" style="background:transparent; border:none; color:var(--text-clean); font-family:var(--font-mono); font-size:11px; cursor:pointer; text-transform:uppercase; letter-spacing:1px;">Index ☰</button>
+      </div>
     </div>
   </footer>
 
-  <!-- Application Execution Architecture Block -->
   <script>
-    // Local Reactive Memory Database Initialisation
-    const db = new Dexie('AgenticMemory');
+    const db = new Dexie('AgencyContextArchitectureDB');
     db.version(1).stores({
       chats: '++id, title, isStarred, timestamp',
+      messages: '++id, chatId, role, content, timestamp',
       templates: '++id, name, dataPayload, timestamp'
     });
 
-    // Central Application Core Controller State Object
-    const AppState = {
-      activeTab: 'rephrase-workspace',
-      isRecording: false,
-      isModelHydrated: false,
-      activeChatId: null,
-      selectedLanguage: 'en'
-    };
+    let appWorker = null;
+    let currentChatId = null;
+    let activeBubble = null;
+    let speechEngine = null;
+    let recordingActive = false;
+    let activeTabId = 'rephrase-workspace';
+    let lastLoadedTemplateText = "";
 
-    // DOM Element Maps
-    const DOM = {
-      tabs: document.querySelectorAll('.tab-trigger'),
-      workspaces: {
-        'rephrase-workspace': document.getElementById('rephrase-workspace'),
-        'templatize-workspace': document.getElementById('templatize-workspace')
-      },
+    const UI = {
+      gpuStatus: document.getElementById('gpu-check-status'),
+      hwHeader: document.getElementById('hardware-hw-status'),
+      initBtn: document.getElementById('btn-init-hardware'),
       overlay: document.getElementById('onboarding-overlay'),
-      hydrateBtn: document.getElementById('btn-hydrate-full'),
-      progressBar: document.getElementById('hydration-bar'),
-      progressContainer: document.getElementById('hydration-progress-ui'),
-      statusText: document.getElementById('hydration-status-text'),
-      langSelection: document.getElementById('lang-selection'),
-      voiceBtn: document.getElementById('btn-voice-toggle'),
-      submitBtn: document.getElementById('btn-submit-input'),
-      inputField: document.getElementById('text-input-field'),
+      progressBar: document.getElementById('hardware-bar'),
+      progressContainer: document.getElementById('hardware-progress-container'),
+      statusText: document.getElementById('status-text'),
+      modelSelect: document.getElementById('model-selection'),
+      langSelect: document.getElementById('lang-selection'),
+      textInput: document.getElementById('user-text-input'),
+      sendBtn: document.getElementById('btn-send'),
+      voiceBtn: document.getElementById('btn-voice'),
       chatStream: document.getElementById('chat-stream'),
-      menuBtn: document.getElementById('btn-menu-toggle'),
+      tabs: document.querySelectorAll('.tab-trigger'),
       drawer: document.getElementById('utility-drawer'),
-      drawerList: document.getElementById('memory-items-target'),
+      drawerToggle: document.getElementById('btn-drawer-toggle'),
+      drawerClose: document.getElementById('btn-drawer-close'),
+      drawerList: document.getElementById('drawer-target-list'),
       searchField: document.getElementById('search-memory'),
       dropzone: document.getElementById('dropzone'),
       fileInput: document.getElementById('file-input'),
-      statusFeed: document.getElementById('template-status-feed')
+      templateFeed: document.getElementById('template-status-feed'),
+      workspaces: {
+        'rephrase-workspace': document.getElementById('rephrase-workspace'),
+        'templatize-workspace': document.getElementById('templatize-workspace')
+      }
     };
 
-    // Initialization Sequence
-    document.addEventListener('DOMContentLoaded', () => {
-      setupTabListeners();
-      setupHydrationEngine();
-      setupInteractionHandlers();
-      setupDocumentParsers();
-      renderMemoryLogs();
+    const SYSTEM_PROMPTS = {
+      rephrase: "You being a professional enterprise architect rephrase the mail to suit corporate etiquette with sheer assertive tone yet with clear direction to get things done. Eliminate passivity. Do not invent details. Provide two choices: [Option 1: Executive Directive] and [Option 2: Engineering Order].",
+      templatize: "You being a chief enterprise architect refer the template document and the various sources attached or url given and generate outcome almost similar in the layout and content structure, info architecture with all content for respective sections extracted from the sources alone. If any sections content elicit from the user don't assume or hallucinate. Always provide outcome as editable document. If any source data is missing, replace that section with explicit placeholder token '[INSUFFICIENT_SOURCE_DATA]'."
+    };
+
+    async function checkWebGPUSupport() {
+      if (!navigator.gpu) {
+        UI.gpuStatus.style.color = 'var(--danger)';
+        UI.gpuStatus.innerText = "WebGPU Missing from Browser Environment.";
+        return;
+      }
+      const adapter = await navigator.gpu.requestAdapter();
+      if (adapter) {
+        UI.gpuStatus.style.color = 'var(--text-clean)';
+        UI.gpuStatus.innerText = `${adapter.name || "Accelerated Architecture Pipeline Active"}`;
+        UI.initBtn.disabled = false;
+      } else {
+        UI.gpuStatus.innerText = "No discrete GPU adapter matched.";
+      }
+    }
+
+    UI.initBtn.addEventListener('click', () => {
+      UI.initBtn.disabled = true;
+      UI.progressContainer.style.display = 'block';
       
-      // Auto-instantiate clean workspace state
-      createNewChatSession();
+      appWorker = new Worker(new URL('./worker.js', window.location.href));
+      appWorker.postMessage({ type: 'INITIALIZE_ENGINE', modelId: UI.modelSelect.value });
+
+      appWorker.onmessage = async (event) => {
+        const msg = event.data;
+        if (msg.type === 'PROGRESS') {
+          UI.statusText.innerText = msg.text;
+          if (msg.ratio) UI.progressBar.style.width = `${Math.round(msg.ratio * 100)}%`;
+        } else if (msg.type === 'ENGINE_READY') {
+          UI.overlay.classList.add('hidden');
+          UI.textInput.disabled = false;
+          UI.textInput.placeholder = "Compute dynamic query input...";
+          UI.sendBtn.disabled = false;
+          UI.hwHeader.innerText = "Edge Execution Layer Hot";
+          setupVoicePipeline();
+          await createChatSession();
+          await renderLogs();
+        } else if (msg.type === 'TOKEN_STREAM') {
+          if (activeBubble) {
+            activeBubble.innerHTML += msg.text;
+            UI.chatStream.scrollTop = UI.chatStream.scrollHeight;
+          }
+        } else if (msg.type === 'STREAM_COMPLETE') {
+          if (activeBubble) {
+            await db.messages.add({
+              chatId: currentChatId,
+              role: 'agent',
+              content: activeBubble.innerHTML,
+              timestamp: Date.now()
+            });
+          }
+          activeBubble = null;
+        } else if (msg.type === 'ERROR') {
+          alert(`Compute Layer Exception: ${msg.error}`);
+          UI.initBtn.disabled = false;
+        }
+      };
     });
 
-    // Clean Tab Component Swapping
-    function setupTabListeners() {
-      DOM.tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-          DOM.tabs.forEach(t => t.classList.remove('active'));
-          tab.classList.add('active');
-          
-          const target = tab.getAttribute('data-target');
-          Object.keys(DOM.workspaces).forEach(key => {
-            DOM.workspaces[key].classList.add('hidden');
-          });
-          DOM.workspaces[target].classList.remove('hidden');
-          AppState.activeTab = target;
-        });
-      });
+    async function createChatSession() {
+      currentChatId = await db.chats.add({ title: "New Log Stream Thread", isStarred: 0, timestamp: Date.now() });
     }
 
-    // Client-Side Segmented Download Hydration Strategy (SonarQube compliant loop abstraction)
-    function setupHydrationEngine() {
-      DOM.hydrateBtn.addEventListener('click', async () => {
-        AppState.selectedLanguage = DOM.langSelection.value;
-        DOM.hydrateBtn.classList.add('hidden');
-        DOM.progressContainer.classList.remove('hidden');
-        
-        // Simulating incremental fragmented buffer downloads safely without thread blockers
-        let progress = 0;
-        const totalChunks = 25;
-        
-        const interval = setInterval(() => {
-          progress++;
-          const percent = Math.round((progress / totalChunks) * 100);
-          DOM.progressBar.style.width = `${percent}%`;
-          DOM.statusText.innerText = `Caching Wasm Runtime Weight Binaries: Chunk ${progress}/${totalChunks} (${percent}%)`;
-          
-          if (progress >= totalChunks) {
-            clearInterval(interval);
-            AppState.isModelHydrated = true;
-            DOM.overlay.classList.add('hidden');
-            appendAgentMessage("Local model compilation executed. Hardware pipeline mapping linked via WebGPU layers.");
-          }
-        }, 120);
-      });
-    }
+    async function dispatchPrompt() {
+      const inputStr = UI.textInput.value.trim();
+      if (!inputStr) return;
 
-    // Core Interaction Handlers
-    function setupInteractionHandlers() {
-      DOM.submitBtn.addEventListener('click', () => executeInputCycle());
-      DOM.inputField.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') executeInputCycle();
-      });
+      UI.textInput.value = '';
+      appendRowUI('Architect', inputStr);
+      await db.messages.add({ chatId: currentChatId, role: 'user', content: inputStr, timestamp: Date.now() });
 
-      // Voice Toggle Engine State Layer
-      DOM.voiceBtn.addEventListener('click', () => {
-        AppState.isRecording = !AppState.isRecording;
-        if (AppState.isRecording) {
-          DOM.voiceBtn.classList.add('active');
-          DOM.inputField.placeholder = `Listening to local audio array [${AppState.selectedLanguage.toUpperCase()}]...`;
-        } else {
-          DOM.voiceBtn.classList.remove('active');
-          DOM.inputField.placeholder = "Compute localized processing input...";
-          DOM.inputField.value = "Sample processed vernacular input array token text matched.";
-        }
-      });
+      const wrap = appendRowUI('Intelligence', '');
+      activeBubble = wrap.querySelector('.msg-content');
 
-      // Drawer Interface Toggles
-      DOM.menuBtn.addEventListener('click', () => DOM.drawer.classList.toggle('hidden'));
-      DOM.searchField.addEventListener('input', (e) => renderMemoryLogs(e.target.value));
-    }
-
-    // Local Plain-Text & Structure Extraction Engine
-    function setupDocumentParsers() {
-      DOM.dropzone.addEventListener('click', () => DOM.fileInput.click());
-      DOM.fileInput.addEventListener('change', (e) => handleFileExtraction(e.target.files[0]));
+      const systemInstruction = (activeTabId === 'rephrase-workspace') ? SYSTEM_PROMPTS.rephrase : SYSTEM_PROMPTS.templatize;
       
-      DOM.dropzone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        DOM.dropzone.style.borderColor = "var(--accent)";
+      let contextualPayload = inputStr;
+      if (activeTabId === 'templatize-workspace' && lastLoadedTemplateText) {
+        contextualPayload = `[REFERENCE TEMPLATE LAYOUT]:\n${lastLoadedTemplateText}\n\n[USER SOURCE VARIABLES/INPUT DATA]:\n${inputStr}`;
+      }
+
+      appWorker.postMessage({
+        type: 'EXECUTE_INFERENCE',
+        messages: [
+          { role: 'system', content: systemInstruction },
+          { role: 'user', content: contextualPayload }
+        ]
       });
-      DOM.dropzone.addEventListener('dragleave', () => {
-        DOM.dropzone.style.borderColor = "var(--border-color)";
-      });
-      DOM.dropzone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        DOM.dropzone.style.borderColor = "var(--border-color)";
-        if (e.dataTransfer.files.length > 0) {
-          handleFileExtraction(e.dataTransfer.files[0]);
-        }
-      });
+
+      const count = await db.messages.where('chatId').equals(currentChatId).count();
+      if (count <= 2) {
+        await db.chats.update(currentChatId, { title: inputStr.substring(0, 24) + '...' });
+        await renderLogs();
+      }
     }
 
-    async function handleFileExtraction(file) {
-      if (!file) return;
-      DOM.statusFeed.innerHTML = `<div style='font-size:14px;color:var(--accent);'>Natively parsing client container payload: ${file.name}</div>`;
+    UI.sendBtn.addEventListener('click', dispatchPrompt);
+    UI.textInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') dispatchPrompt(); });
+
+    function appendRowUI(speaker, txt) {
+      const row = document.createElement('div');
+      row.classList.add('msg-row');
+      row.innerHTML = `<div class="msg-speaker">${speaker}</div><div class="msg-content">${txt}</div>`;
+      UI.chatStream.appendChild(row);
+      UI.chatStream.scrollTop = UI.chatStream.scrollHeight;
+      return row;
+    }
+
+    function setupVoicePipeline() {
+      const SpeechVendor = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechVendor) { UI.voiceBtn.style.display = 'none'; return; }
       
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const textContent = e.target.result;
-        // Strip out empty lines or structural formatting bloat to prevent token spill over
-        const cleanedText = textContent.replace(/\s+/g, ' ').trim();
-        
-        const templateName = file.name.split('.')[0];
-        await db.templates.add({
-          name: templateName,
-          dataPayload: cleanedText.substring(0, 5000), // Enforce conservative safety boundary
-          timestamp: Date.now()
-        });
-        
-        DOM.statusFeed.innerHTML = `
-          <div style='background:var(--bg-surface); padding:12px; border-radius:8px; border:1px solid var(--border-color);'>
-            <span style='color:var(--accent); font-weight:bold;'>✓ Locally Stored</span>
-            <p style='font-size:13px; margin-top:4px;'>Parsed ${cleanedText.length} character tokens into Template Memory Store.</p>
-          </div>
-        `;
-        renderMemoryLogs();
+      speechEngine = new SpeechVendor();
+      speechEngine.continuous = false;
+      speechEngine.interimResults = false;
+
+      speechEngine.onstart = () => {
+        recordingActive = true;
+        UI.voiceBtn.classList.add('active');
+        UI.textInput.placeholder = `Listening to capture context array [${UI.langSelect.value}]...`;
       };
-      reader.readAsText(file);
+      speechEngine.onresult = (e) => { UI.textInput.value = e.results[0][0].transcript; };
+      speechEngine.onend = () => {
+        recordingActive = false;
+        UI.voiceBtn.classList.remove('active');
+        UI.textInput.placeholder = "Compute dynamic query input...";
+      };
+      speechEngine.onerror = () => speechEngine.stop();
     }
 
-    // State Mutation & Persistence Core Loops
-    async function createNewChatSession() {
-      const newId = await db.chats.add({
-        title: "Active Chat Log Node",
-        isStarred: 0,
-        timestamp: Date.now()
-      });
-      AppState.activeChatId = newId;
+    UI.voiceBtn.addEventListener('click', () => {
+      if (!speechEngine) return;
+      if (recordingActive) { speechEngine.stop(); } else { speechEngine.lang = UI.langSelect.value; speechEngine.start(); }
+    });
+
+    UI.dropzone.addEventListener('click', () => UI.fileInput.click());
+    UI.fileInput.addEventListener('change', (e) => processFile(e.target.files[0]));
+
+    function processFile(file) {
+      if (!file) return;
+      const r = new FileReader();
+      r.onload = async (e) => {
+        lastLoadedTemplateText = e.target.result.trim();
+        await db.templates.add({ name: file.name, dataPayload: lastLoadedTemplateText.substring(0, 10000), timestamp: Date.now() });
+        UI.templateFeed.innerHTML = `<div>✓ Loaded Structure Asset Matrix: <strong>${file.name}</strong>. Submit data streams inside the control panel.</div>`;
+        await renderLogs();
+      };
+      r.readAsText(file);
     }
 
-    function executeInputCycle() {
-      const val = DOM.inputField.value.trim();
-      if (!val) return;
+    async function renderLogs(q = '') {
+      UI.drawerList.innerHTML = '';
+      const chats = await db.chats.reverse().toArray();
+      const templates = await db.templates.reverse().toArray();
 
-      appendUserMessage(val);
-      DOM.inputField.value = '';
-
-      // Processing pipeline fallback logic handling edge inferences local text compilation
-      setTimeout(() => {
-        if (AppState.activeTab === 'rephrase-workspace') {
-          appendAgentMessage(`<strong>[Formal variant Match]:</strong> Please proceed with revising the configuration arrays.<br><br><strong>[Conversational variant Match]:</strong> Here is the structural alternative you requested for processing.`);
-        }
-      }, 600);
-    }
-
-    function appendUserMessage(text) {
-      const wrap = document.createElement('div');
-      wrap.classList.add('msg-wrap', 'user');
-      wrap.innerHTML = `<div class="bubble">${text}</div>`;
-      DOM.chatStream.appendChild(wrap);
-      DOM.chatStream.scrollTop = DOM.chatStream.scrollHeight;
-    }
-
-    function appendAgentMessage(text) {
-      const wrap = document.createElement('div');
-      wrap.classList.add('msg-wrap', 'agent');
-      wrap.innerHTML = `<div class="bubble">${text}</div>`;
-      DOM.chatStream.appendChild(wrap);
-      DOM.chatStream.scrollTop = DOM.chatStream.scrollHeight;
-    }
-
-    // Native Relational Memory Rendering Execution Loop
-    async function renderMemoryLogs(filterString = '') {
-      DOM.drawerList.innerHTML = '';
-      
-      const savedChats = await db.chats.reverse().toArray();
-      const savedTemplates = await db.templates.reverse().toArray();
-      
-      // Filter out records based on string constraints without creating redundant allocation variables
-      const filteredChats = savedChats.filter(c => c.title.toLowerCase().includes(filterString.toLowerCase()));
-      const filteredTemplates = savedTemplates.filter(t => t.name.toLowerCase().includes(filterString.toLowerCase()));
-
-      // Construct Unified UI Listing Elements safely
-      filteredChats.forEach(chat => {
+      chats.filter(c => c.title.toLowerCase().includes(q.toLowerCase())).forEach(c => {
         const li = document.createElement('li');
         li.classList.add('drawer-item');
-        li.innerHTML = `
-          <span style="font-size:13px; overflow:hidden; text-overflow:ellipsis;">💬 ${chat.title}</span>
-          <div style="display:flex; gap:6px;">
-            <button onclick="renameChatNode(${chat.id}, event)" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer;">✎</button>
-            <button onclick="toggleStarNode(${chat.id}, ${chat.isStarred}, event)" style="background:transparent; border:none; color:${chat.isStarred ? 'var(--accent)' : 'var(--text-muted)'}; cursor:pointer;">★</button>
-          </div>
-        `;
-        DOM.drawerList.appendChild(li);
+        li.innerHTML = `<span class="item-title">💬 ${c.title}</span>
+          <div>
+            <button class="act" data-a="ren" data-i="${c.id}" style="background:transparent; border:none; color:var(--text-clean); font-family:var(--font-mono); margin-right:8px; cursor:pointer;">RENAME</button>
+            <button class="act" data-a="st" data-i="${c.id}" style="background:transparent; border:none; color:${c.isStarred ? 'var(--accent-dim)' : 'var(--text-muted)'}; font-family:var(--font-mono); cursor:pointer;">STAR</button>
+          </div>`;
+        UI.drawerList.appendChild(li);
       });
 
-      filteredTemplates.forEach(tpl => {
+      templates.filter(t => t.name.toLowerCase().includes(q.toLowerCase())).forEach(t => {
         const li = document.createElement('li');
         li.classList.add('drawer-item');
-        li.innerHTML = `
-          <span style="font-size:13px; font-weight:600; color:var(--accent);">📋 ${tpl.name}</span>
-          <button onclick="recallTemplateToWorkspace(${tpl.id}, event)" style="background:var(--accent); border:none; color:var(--bg-primary); padding:2px 6px; border-radius:4px; font-size:11px; cursor:pointer;">Recall</button>
-        `;
-        DOM.drawerList.appendChild(li);
+        li.innerHTML = `<span class="item-title" style="color:var(--accent-dim)">📋 ${t.name}</span><button class="act" data-a="rc" data-i="${t.id}" style="background:transparent; border:none; color:var(--text-clean); font-family:var(--font-mono); cursor:pointer;">RECALL</button>`;
+        UI.drawerList.appendChild(li);
       });
     }
 
-    // Expose memory node operations out of inner scopes cleanly
-    window.renameChatNode = async (id, event) => {
-      event.stopPropagation();
-      const current = await db.chats.get(id);
-      const updatedTitle = prompt("Update string context node key:", current.title);
-      if (updatedTitle?.trim()) {
-        await db.chats.update(id, { title: updatedTitle.trim() });
-        renderMemoryLogs();
+    UI.drawerList.addEventListener('click', async (e) => {
+      const target = e.target.closest('.act');
+      if (!target) return;
+      const action = target.getAttribute('data-a');
+      const id = parseInt(target.getAttribute('data-i'));
+
+      if (action === 'ren') {
+        const c = await db.chats.get(id);
+        const name = prompt("Rename operational log string key:", c.title);
+        if (name?.trim()) { await db.chats.update(id, { title: name.trim() }); renderLogs(); }
+      } else if (action === 'st') {
+        const c = await db.chats.get(id);
+        await db.chats.update(id, { isStarred: c.isStarred ? 0 : 1 }); renderLogs();
+      } else if (action === 'rc') {
+        const t = await db.templates.get(id);
+        lastLoadedTemplateText = t.dataPayload;
+        UI.drawer.classList.remove('open');
+        document.getElementById('tab-templatize').click();
+        UI.templateFeed.innerHTML = `<div>Loaded Configuration Context: <strong>${t.name}</strong></div>`;
       }
-    };
+    });
 
-    window.toggleStarNode = async (id, currentStatus, event) => {
-      event.stopPropagation();
-      await db.chats.update(id, { isStarred: currentStatus ? 0 : 1 });
-      renderMemoryLogs();
-    };
+    UI.drawerToggle.addEventListener('click', () => UI.drawer.classList.add('open'));
+    UI.drawerClose.addEventListener('click', () => UI.drawer.classList.remove('open'));
+    UI.searchField.addEventListener('input', (e) => renderLogs(e.target.value));
+    
+    UI.tabs.forEach(t => t.addEventListener('click', () => {
+      UI.tabs.forEach(tab => tab.classList.remove('active'));
+      t.classList.add('active');
+      activeTabId = t.getAttribute('data-target');
+      Object.keys(UI.workspaces).forEach(k => UI.workspaces[k].classList.add('hidden'));
+      UI.workspaces[activeTabId].classList.remove('hidden');
+    }));
 
-    window.recallTemplateToWorkspace = async (id, event) => {
-      event.stopPropagation();
-      const targetTpl = await db.templates.get(id);
-      if (targetTpl) {
-        DOM.drawer.classList.add('hidden');
-        document.getElementById('tab-rephrase').click();
-        appendAgentMessage(`<strong>Recalled Template Buffer [${targetTpl.name}]:</strong><br><span style="color:var(--text-muted); font-size:13px;">${targetTpl.dataPayload}</span>`);
-      }
-    };
-  </script>
-
-  <!-- PWA Service Worker Hook Registration Block -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-          .then(reg => console.log('Service Worker Operational Mapping Bound: ', reg.scope))
-          .catch(err => console.error('Service Worker Registration Aborted: ', err));
-      });
-    }
+    checkWebGPUSupport();
   </script>
 </body>
 </html>
