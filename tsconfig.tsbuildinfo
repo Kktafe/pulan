@@ -1,0 +1,1 @@
+{"root":["./src/main.tsx","./src/test.setup.ts","./src/vite-env.d.ts","./src/lib/agent.test.ts","./src/lib/agent.ts","./src/lib/db.ts","./src/lib/fileText.ts","./src/lib/types.ts"],"version":"6.0.3"}
